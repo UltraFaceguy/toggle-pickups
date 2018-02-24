@@ -1,0 +1,11 @@
+name: TogglePickups
+version: 1.0
+main: TogglePickUps
+author: joshuaemq
+description: Allows you to toggle pickups!
+
+commands:
+     toggledrops:
+         usage: /<command>
+         aliases: [td]
+         description: Toggle Drops
