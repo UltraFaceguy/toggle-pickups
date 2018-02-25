@@ -20,25 +20,13 @@ public class JoinListener implements Listener {
   @EventHandler
   public void onJoin(PlayerJoinEvent e) {
     Player p = e.getPlayer();
-    File userFile = new File(getDataFolder()+File.separator+"playerPreferences"+File.separator+p.getUniqueId().toString()+".yml");
-    if (!userFile.exists()) {
-      try {
-        userFile.createNewFile();
-      } catch (IOException e1) {
-        e1.printStackTrace();
-      }
-      plugin.setUserConfig(YamlConfiguration.loadConfiguration(userFile));
-      try {
-        plugin.getUserConfig().save(userFile);
-      } catch (IOException e1) {
-        e1.printStackTrace();
-      }
-      p.sendMessage("Your file was created!");
-      //add user to the list
-    } else {
-      p.sendMessage("Your File Exists!");
-      //add user to the list
-      //add user to the array
+    if (!plugin.getConfig().contains(p.getUniqueId().toString())) {
+      String defaultFilter = "REWARDS!";
+      plugin.getConfig().set(String.valueOf(p.getUniqueId().toString()) + ".LootFilter", defaultFilter);
+      plugin.saveConfig();
+      String key = p.getUniqueId().toString();
+      String lootFilterItems = plugin.getConfig().getString(String.valueOf(p.getUniqueId().toString()) + ".LootFilter");
+      plugin.getMap().put(key, lootFilterItems);
     }
   }
 
