@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class TogglePickupsPlugin extends JavaPlugin{
+public class TogglePickupsPlugin extends JavaPlugin {
 
 	private PlayerFilterManager playerFilterManager;
 
