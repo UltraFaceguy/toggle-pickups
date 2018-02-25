@@ -1,13 +1,18 @@
 package me.joshuaemq.listeners;
 
 import me.joshuaemq.TogglePickupsPlugin;
+import me.joshuaemq.data.PlayerFilterData;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemPickupListener implements Listener {
 
@@ -17,18 +22,30 @@ public class ItemPickupListener implements Listener {
     this.plugin = plugin;
   }
 
-  @EventHandler
-  public void onEntityPickup(EntityPickupItemEvent event) {
-    if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
-      return;
-    }
-    if (plugin.getPlayerFilterManager().getPlayerFilterMap().containsKey(event.getEntity().getUniqueId())) {
-      ItemStack item = event.getItem().getItemStack();
-      ItemMeta meta = item.getItemMeta();
-      if (item.hasItemMeta() && "REWARD!".equalsIgnoreCase(ChatColor.stripColor(meta.getDisplayName()))) {
+  @EventHandler(priority= EventPriority.HIGH)
+  public void onEntityPickup(EntityPickupItemEvent e) {
+      if (e.isCancelled() || !(e.getEntity() instanceof Player)) {
           return;
       }
-      event.setCancelled(true);
+      PlayerFilterData data = plugin.getPlayerFilterManager().getPlayerFilterMap().get(e.getEntity().getUniqueId());
+
+      if (data.isFilterEnabled()) {
+          e.setCancelled(true);
+          ItemStack item = e.getItem().getItemStack();
+          if (item.hasItemMeta()) {
+              ItemMeta meta = item.getItemMeta();
+              List<String> lore = meta.getLore();
+
+              if ("REWARD!".equals(ChatColor.stripColor(meta.getDisplayName()))) {
+                  e.setCancelled(false);
+                  return;
+              }
+              for (String str : lore) {
+                  if ((data.getLootFilterEntries().equals(ChatColor.stripColor(str)))) {
+                      e.setCancelled(false);
+                  }
+          }
+      }
     }
   }
 }
