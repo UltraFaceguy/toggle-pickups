@@ -19,11 +19,10 @@ public class ItemPickupListener implements Listener {
 
   @EventHandler
   public void onEntityPickup(EntityPickupItemEvent event) {
-    if (event.isCancelled()) {
+    if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
       return;
     }
-    Player player = (Player) event.getEntity();
-    if (plugin.getDropsToggledList().contains(player.getUniqueId())) {
+    if (plugin.getPlayerFilterManager().getPlayerFilterMap().containsKey(event.getEntity().getUniqueId())) {
       ItemStack item = event.getItem().getItemStack();
       ItemMeta meta = item.getItemMeta();
       if (item.hasItemMeta() && "REWARD!".equalsIgnoreCase(ChatColor.stripColor(meta.getDisplayName()))) {
