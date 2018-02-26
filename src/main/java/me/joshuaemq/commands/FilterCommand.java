@@ -119,6 +119,6 @@ public class FilterCommand extends TogglePickupsPlugin {
         p.sendMessage(ChatColor.RED + "Invalid Argument!");
       }
     }
-    return true;
+    return false;
   }
 }

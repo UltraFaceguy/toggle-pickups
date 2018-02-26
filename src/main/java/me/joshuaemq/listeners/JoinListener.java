@@ -50,11 +50,11 @@ public class JoinListener implements Listener {
     else {
       p.sendMessage("Your File Exists!");
     }
-
     if (!plugin.getPlayerFilterManager().getPlayerFilterMap().containsKey(p.getUniqueId())) {
       PlayerFilterData data = new PlayerFilterData();
-      data.setFilterEnabled(this.getPlayerConfig().getBoolean("filterEnabled"));
+      data.setFilterEnabled(this.getPlayerConfig().getBoolean(".drops-enabled"));
       data.setLootFilterEntries(new ArrayList<>());
+      System.out.println(data);
       plugin.getPlayerFilterManager().getPlayerFilterMap().put(p.getUniqueId(), data);
     }
   }

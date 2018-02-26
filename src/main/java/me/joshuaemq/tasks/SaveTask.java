@@ -47,7 +47,8 @@ public class SaveTask extends BukkitRunnable {
     for (UUID player : plugin.getPlayerFilterManager().getPlayerFilterMap().keySet()) {
       PlayerFilterData playerData = plugin.getPlayerFilterManager().getPlayerFilterMap().get(player);
       String pathToFile = player.toString() + ".yml";
-      plugin.getConfig().set(pathToFile, playerData);
+
+      plugin.getConfig().get(pathToFile, playerData);
       plugin.saveConfig();
     }
 
@@ -55,23 +56,31 @@ public class SaveTask extends BukkitRunnable {
 
     Collection<? extends Player> getOnlinePlayers = Bukkit.getOnlinePlayers();
     List<String> onlinePlayers = new ArrayList<String>();
+    List<UUID> onlinePlayersUUID = new ArrayList<>();
 
     for (Player p : getOnlinePlayers) {
-      onlinePlayers.add(p.getUniqueId().toString());
+        onlinePlayers.add(p.toString());
+    }
+    for (String p : onlinePlayers) {
+        UUID onlinePlayerUUID = UUID.fromString(p);
+        onlinePlayersUUID.add(onlinePlayerUUID);
     }
 
-    List<String> playerToRemove = new ArrayList<String>();
+    List<UUID> playerToRemove = new ArrayList<UUID>();
 
     for (UUID listEntry : plugin.getPlayerFilterManager().getPlayerFilterMap().keySet()) {
 
-      if (!(onlinePlayers.contains(listEntry))) {
-        playerToRemove.add(listEntry.toString());
+      if (!(onlinePlayersUUID.contains(listEntry))) {
+          playerToRemove.add(listEntry);
       }
     }
 
-    for (String PlayerToRemove : playerToRemove) {
-      UUID playerToRemoveUUID = UUID.fromString(PlayerToRemove);
+    for (UUID PlayerToRemove : playerToRemove) {
       plugin.getPlayerFilterManager().getPlayerFilterMap().remove(PlayerToRemove);
+      System.out.println(PlayerToRemove.toString());
+      System.out.println(onlinePlayers.toString());
+      System.out.println(onlinePlayersUUID.toString());
+
 
     }
     playerToRemove.clear();

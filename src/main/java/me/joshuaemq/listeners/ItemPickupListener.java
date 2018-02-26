@@ -44,8 +44,8 @@ public class ItemPickupListener implements Listener {
                   if ((data.getLootFilterEntries().equals(ChatColor.stripColor(str)))) {
                       e.setCancelled(false);
                   }
+              }
           }
-      }
     }
   }
 }

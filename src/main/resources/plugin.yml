@@ -1,6 +1,6 @@
 name: TogglePickups
 version: 1.0
-main: TogglePickUps
+main: me.joshuaemq.TogglePickupsPlugin
 author: joshuaemq
 description: Allows you to toggle pickups!
 
