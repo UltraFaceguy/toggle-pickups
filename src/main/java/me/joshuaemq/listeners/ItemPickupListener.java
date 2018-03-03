@@ -40,12 +40,13 @@ public class ItemPickupListener implements Listener {
                   e.setCancelled(false);
                   return;
               }
-              for (String str : lore) {
-                  if ((data.getLootFilterEntries().equals(ChatColor.stripColor(str)))) {
+
+              for (String str : data.getLootFilterEntries()) {
+                  if (ChatColor.stripColor(lore.toString()).contains(str)) {
                       e.setCancelled(false);
                   }
+              }
           }
-      }
     }
   }
 }

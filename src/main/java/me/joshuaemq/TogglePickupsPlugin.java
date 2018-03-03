@@ -1,6 +1,8 @@
 package me.joshuaemq;
 
 import java.util.UUID;
+
+import me.joshuaemq.commands.FilterCommand;
 import me.joshuaemq.data.PlayerFilterData;
 import me.joshuaemq.listeners.ItemPickupListener;
 import me.joshuaemq.listeners.JoinListener;
@@ -22,11 +24,12 @@ public class TogglePickupsPlugin extends JavaPlugin {
 
 		saveTask.runTaskTimer(this,
 				0L,
-				3000L
+				600L
 		);
 
 		Bukkit.getPluginManager().registerEvents(new ItemPickupListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
+		this.getCommand("toggledrops").setExecutor(new FilterCommand(this));
 
 		getConfig().options().copyDefaults(true);
 		saveConfig();
@@ -41,6 +44,7 @@ public class TogglePickupsPlugin extends JavaPlugin {
 		HandlerList.unregisterAll(this);
 		playerFilterManager = null;
 		saveTask = null;
+
 		Bukkit.getServer().getLogger().info("Toggleable Drops By Joshuaemq Disabled!");
 	}
 

@@ -2,6 +2,7 @@ package me.joshuaemq.listeners;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import me.joshuaemq.TogglePickupsPlugin;
@@ -45,16 +46,13 @@ public class JoinListener implements Listener {
       } catch (IOException e1) {
         e1.printStackTrace();
       }
-      p.sendMessage("Your file was created!");
-    }
-    else {
-      p.sendMessage("Your File Exists!");
     }
 
     if (!plugin.getPlayerFilterManager().getPlayerFilterMap().containsKey(p.getUniqueId())) {
       PlayerFilterData data = new PlayerFilterData();
-      data.setFilterEnabled(this.getPlayerConfig().getBoolean("filterEnabled"));
+      data.setFilterEnabled(plugin.getConfig().getBoolean(".drops-enabled"));
       data.setLootFilterEntries(new ArrayList<>());
+      System.out.println(data);
       plugin.getPlayerFilterManager().getPlayerFilterMap().put(p.getUniqueId(), data);
     }
   }

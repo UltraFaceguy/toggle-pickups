@@ -5,12 +5,13 @@ import me.joshuaemq.data.PlayerFilterData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class FilterCommand extends TogglePickupsPlugin {
+public class FilterCommand implements CommandExecutor {
   private TogglePickupsPlugin plugin;
 
   public FilterCommand(TogglePickupsPlugin plugin) {
@@ -26,7 +27,7 @@ public class FilterCommand extends TogglePickupsPlugin {
       return false;
     }
 
-    if (cmd.getName().equalsIgnoreCase("toggledrops")) {
+    if (cmd.getLabel().equalsIgnoreCase("toggledrops")) {
 
       if (args.length == 0) {
         if (!data.isFilterEnabled()) {
@@ -91,7 +92,7 @@ public class FilterCommand extends TogglePickupsPlugin {
           String Removal = String.valueOf(removal.substring(0, 1).toUpperCase()) + removal.substring(1);
           if (data.getLootFilterEntries().contains(Removal)) {
             List<String> lootFilter = data.getLootFilterEntries();
-            lootFilter.add(Removal);
+            lootFilter.remove(Removal);
             p.sendMessage(ChatColor.RED + Removal + " was removed from your loot filter!");
           } else {
             p.sendMessage(ChatColor.RED + removal.substring(0, 1).toUpperCase() + removal.substring(1) + " is not in your loot filter!");
@@ -101,9 +102,6 @@ public class FilterCommand extends TogglePickupsPlugin {
           p.sendMessage(ChatColor.RED + "You must disable ToggleDrops to edit your loot filter!");
           return false;
         }
-
-
-
 
       } else if (args[0].equalsIgnoreCase("list")) {
         p.sendMessage(ChatColor.GREEN + "Filtered Items: " + ChatColor.RED + data.getLootFilterEntries().toString().trim());
