@@ -1,22 +1,22 @@
 package me.joshuaemq.tasks;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.nio.file.Path;
+import java.io.IOException;
 import java.util.*;
 
 import me.joshuaemq.TogglePickupsPlugin;
 import me.joshuaemq.data.PlayerFilterData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import sun.net.www.http.HttpCapture;
 
 public class SaveTask extends BukkitRunnable {
 
     private final TogglePickupsPlugin plugin;
+    private File playerFile;
+    private FileConfiguration config;
 
     public SaveTask(TogglePickupsPlugin plugin) {
         this.plugin = plugin;
@@ -48,15 +48,26 @@ public class SaveTask extends BukkitRunnable {
 
         //Saves player data to config
 
-        if (plugin.getConfig().getKeys(false) != null) {
+        if (plugin.getDataFolder() != null) {
             for (UUID key : plugin.getPlayerFilterManager().getPlayerFilterMap().keySet()) {
 
                 PlayerFilterData playerData = plugin.getPlayerFilterManager().getPlayerFilterMap().get(key);
-                plugin.getConfig().set(key + ".drops-enabled", playerData.isFilterEnabled());
-                plugin.getConfig().set(key + ".loot-filter-entries", playerData.getLootFilterEntries());
-                plugin.saveConfig();
+
+                playerFile = new File(plugin.getDataFolder(), key.toString() + ".yml");
+                config = YamlConfiguration.loadConfiguration(playerFile);
+
+                config.set(key + ".drops-enabled", playerData.isFilterEnabled());
+                config.set(key + ".loot-filter-entries", playerData.getLootFilterEntries());
+                
+                try {
+                    config.save(playerFile);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
                 System.out.println("Player data saved for: " + key.toString());
+
                 //remove offline players from map.
+
                 Player onlinePlayer = Bukkit.getPlayer(key);
                 if (!(onlinePlayer.isOnline())) {
                     Map offlinePlayer = plugin.getPlayerFilterManager().getPlayerFilterMap();
@@ -64,6 +75,9 @@ public class SaveTask extends BukkitRunnable {
                     System.out.println("Offline Player Removed From Map: " + key.toString());
                 }
             }
+
+        } else {
+            System.out.println("Folder is empty/non-existing");
         }
     }
 }
