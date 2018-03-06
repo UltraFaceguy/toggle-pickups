@@ -41,14 +41,15 @@ public class ItemPickupListener implements Listener {
           if (item.hasItemMeta()) {
               ItemMeta meta = item.getItemMeta();
               List<String> lore = meta.getLore();
-
+              String itemName = item.getItemMeta().getDisplayName();
+              String itemNameNoColor = ChatColor.stripColor(itemName);
               if ("REWARD!".equals(ChatColor.stripColor(meta.getDisplayName())) || "(Faceguy Crest)".equals(ChatColor.stripColor(meta.getDisplayName()))) {
                   e.setCancelled(false);
                   return;
               }
 
               for (String str : data.getLootFilterEntries()) {
-                  if (ChatColor.stripColor(lore.toString()).contains(str)) {
+                  if (ChatColor.stripColor(lore.toString()).contains(str) || itemNameNoColor.contains(str)) {
                       e.setCancelled(false);
                   }
               }
