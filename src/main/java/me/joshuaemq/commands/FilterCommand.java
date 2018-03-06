@@ -28,7 +28,7 @@ public class FilterCommand implements CommandExecutor {
     }
 
     if (cmd.getLabel().equalsIgnoreCase("toggledrops")) {
-
+      plugin.createPlayerFile(p);
       if (args.length == 0) {
         if (!data.isFilterEnabled()) {
           data.setFilterEnabled(true);
