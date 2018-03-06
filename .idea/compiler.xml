@@ -6,11 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="TogglePickUps" />
+        <module name="TogglePickups" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="TogglePickUps" target="1.8" />
+      <module name="TogglePickups" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

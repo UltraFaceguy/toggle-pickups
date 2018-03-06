@@ -27,6 +27,10 @@ public class ItemPickupListener implements Listener {
       if (e.isCancelled() || !(e.getEntity() instanceof Player)) {
           return;
       }
+      Player playerInEvent = (Player) e.getEntity();
+      if (!(playerInEvent.hasPermission("toggledrops.use"))) {
+        return;
+      }
       PlayerFilterData data = plugin.getPlayerFilterManager().getPlayerFilterMap().get(e.getEntity().getUniqueId());
 
       if (data.isFilterEnabled()) {
@@ -36,16 +40,17 @@ public class ItemPickupListener implements Listener {
               ItemMeta meta = item.getItemMeta();
               List<String> lore = meta.getLore();
 
-              if ("REWARD!".equals(ChatColor.stripColor(meta.getDisplayName()))) {
+              if ("REWARD!".equals(ChatColor.stripColor(meta.getDisplayName())) || "(Faceguy Crest)".equals(ChatColor.stripColor(meta.getDisplayName()))) {
                   e.setCancelled(false);
                   return;
               }
-              for (String str : lore) {
-                  if ((data.getLootFilterEntries().equals(ChatColor.stripColor(str)))) {
+
+              for (String str : data.getLootFilterEntries()) {
+                  if (ChatColor.stripColor(lore.toString()).contains(str)) {
                       e.setCancelled(false);
                   }
+              }
           }
-      }
     }
   }
 }
