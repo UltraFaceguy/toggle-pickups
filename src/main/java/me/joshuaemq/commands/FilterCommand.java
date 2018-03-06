@@ -32,17 +32,17 @@ public class FilterCommand implements CommandExecutor {
       if (args.length == 0) {
         if (!data.isFilterEnabled()) {
           data.setFilterEnabled(true);
-          p.sendMessage(ChatColor.RED + "You can no longer pickup items!");
+          p.sendMessage(ChatColor.RED + "You enabled your loot filter!");
         }
         else if (data.isFilterEnabled()) {
           data.setFilterEnabled(false);
-          p.sendMessage(ChatColor.GREEN + "You can now pickup items!");
+          p.sendMessage(ChatColor.GREEN + "You disabled your loot filter!");
         }
 
       } else if (args[0].equalsIgnoreCase("add")) {
         if (!(data.isFilterEnabled())) {
           if (args.length == 1) {
-            p.sendMessage(ChatColor.YELLOW + "Options: " + ChatColor.WHITE + " Common," + ChatColor.BLUE + " Uncommon," + ChatColor.DARK_PURPLE + " Rare," + ChatColor.RED + " Epic," + ChatColor.GOLD + " Unique");
+            p.sendMessage(ChatColor.YELLOW + "Options: " + ChatColor.WHITE + "Common" + ChatColor.BLUE + " Uncommon" + ChatColor.DARK_PURPLE + " Rare" + ChatColor.RED + " Epic" + ChatColor.GOLD + " Unique" + ChatColor.BLUE + " Enchantment" + ChatColor.GOLD + " Gem" + ChatColor.DARK_GREEN + " Scroll");
             return false;
           }
 
@@ -52,7 +52,7 @@ public class FilterCommand implements CommandExecutor {
             addition = String.valueOf(addition) + args[i];
             ++i;
           }
-          if (!((addition = addition.trim()).equalsIgnoreCase("Common") || addition.equalsIgnoreCase("Uncommon") || addition.equalsIgnoreCase("Rare") || addition.equalsIgnoreCase("Epic") || addition.equalsIgnoreCase("Unique"))) {
+          if (!((addition = addition.trim()).equalsIgnoreCase("Common") || addition.equalsIgnoreCase("Uncommon") || addition.equalsIgnoreCase("Rare") || addition.equalsIgnoreCase("Epic") || addition.equalsIgnoreCase("Unique" ) || addition.equalsIgnoreCase("Gem" ) || addition.equalsIgnoreCase("Enchantment" ) || addition.equalsIgnoreCase("Scroll" ))) {
             p.sendMessage(ChatColor.RED + "Invalid Argument");
             return false;
           }
@@ -75,7 +75,7 @@ public class FilterCommand implements CommandExecutor {
       } else if (args[0].equalsIgnoreCase("remove")) {
         if (!(data.isFilterEnabled())) {
           if (args.length == 1) {
-            p.sendMessage(ChatColor.YELLOW + "Options: " + ChatColor.WHITE + " Common," + ChatColor.BLUE + " Uncommon," + ChatColor.DARK_PURPLE + " Rare," + ChatColor.RED + " Epic," + ChatColor.GOLD + " Unique");
+              p.sendMessage(ChatColor.YELLOW + "Options: " + ChatColor.WHITE + "Common" + ChatColor.BLUE + " Uncommon" + ChatColor.DARK_PURPLE + " Rare" + ChatColor.RED + " Epic" + ChatColor.GOLD + " Unique" + ChatColor.BLUE + " Enchantment" + ChatColor.GOLD + " Gem" + ChatColor.DARK_GREEN + " Scroll");
             return false;
           }
           String removal = "";
@@ -84,7 +84,7 @@ public class FilterCommand implements CommandExecutor {
             removal = String.valueOf(removal) + args[i];
             ++i;
           }
-          if (!((removal = removal.trim()).equalsIgnoreCase("Common") || removal.equalsIgnoreCase("Uncommon") || removal.equalsIgnoreCase("Rare") || removal.equalsIgnoreCase("Epic") || removal.equalsIgnoreCase("Unique"))) {
+            if (!((removal = removal.trim()).equalsIgnoreCase("Common") || removal.equalsIgnoreCase("Uncommon") || removal.equalsIgnoreCase("Rare") || removal.equalsIgnoreCase("Epic") || removal.equalsIgnoreCase("Unique" ) || removal.equalsIgnoreCase("Gem" ) || removal.equalsIgnoreCase("Enchantment" ) || removal.equalsIgnoreCase("Scroll" ))) {
             p.sendMessage(ChatColor.RED + "Invalid Argument");
             return false;
           }
@@ -107,11 +107,13 @@ public class FilterCommand implements CommandExecutor {
         p.sendMessage(ChatColor.GREEN + "Filtered Items: " + ChatColor.RED + data.getLootFilterEntries().toString().trim());
 
       } else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
-        p.sendMessage(ChatColor.GREEN + "-=+=- Toggleable Drops -=+=-");
-        p.sendMessage(ChatColor.WHITE + "/toggleDrops <arg> " + ChatColor.GRAY + "- Enable/Disable loot filter!");
-        p.sendMessage(ChatColor.WHITE + "<Add> " + ChatColor.GRAY + "- To add an item type to your item filter!");
-        p.sendMessage(ChatColor.WHITE + "<Remove> " + ChatColor.GRAY + "- To remove an item type from your item filter!");
-        p.sendMessage(ChatColor.WHITE + "<List> " + ChatColor.GRAY + "- To display your item filter!");
+        p.sendMessage(ChatColor.GREEN + "-=+=-" + ChatColor.GOLD + " Toggle Drops " + ChatColor.GREEN + "-=+=-");
+        p.sendMessage(ChatColor.GRAY + "Toggle Drops allows you to configure a whitelist of items you are able to pickup!");
+        p.sendMessage(ChatColor.WHITE + "/ToggleDrops " + ChatColor.GRAY + "- Enable/Disable loot filter!");
+        p.sendMessage(ChatColor.WHITE + "/ToggleDrops add " + ChatColor.GRAY + "- To add an item type to your loot filter!");
+        p.sendMessage(ChatColor.WHITE + "/ToggleDrops remove " + ChatColor.GRAY + "- To remove an item type from your loot filter!");
+        p.sendMessage(ChatColor.WHITE + "/ToggleDrops list " + ChatColor.GRAY + "- To display your loot filter!");
+        p.sendMessage(ChatColor.GRAY + "Sneaking while your loot filter is active allows you to pick up a non-filtered item!");
         p.sendMessage(ChatColor.GREEN + "=========================");
       } else {
         p.sendMessage(ChatColor.RED + "Invalid Argument!");
