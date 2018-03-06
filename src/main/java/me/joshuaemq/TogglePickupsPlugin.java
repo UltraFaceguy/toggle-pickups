@@ -1,6 +1,8 @@
 package me.joshuaemq;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,6 +15,7 @@ import me.joshuaemq.tasks.SaveTask;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,6 +24,52 @@ public class TogglePickupsPlugin extends JavaPlugin {
     private PlayerFilterManager playerFilterManager;
 
     private SaveTask saveTask;
+
+    private File fileName;
+    private FileConfiguration config;
+    private FileConfiguration playerFile;
+
+    public void createPlayerFile(Player player) {
+
+        Player p = player.getPlayer();
+        fileName = new File(getDataFolder(), p.getUniqueId().toString() + ".yml");
+
+        if (!fileName.exists()) {
+            try {
+                fileName.createNewFile();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            config = YamlConfiguration.loadConfiguration(fileName);
+
+            try {
+                config.save(fileName);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+
+        if (!(getPlayerFilterManager().getPlayerFilterMap().containsKey(p.getUniqueId()))) {
+
+            File playersFile = new File(getDataFolder(), p.getUniqueId().toString() + ".yml");
+            playerFile = YamlConfiguration.loadConfiguration(playersFile);
+
+            if (playerFile.get(p.getUniqueId().toString()) == null) {
+
+                PlayerFilterData data = new PlayerFilterData();
+                data.setFilterEnabled(playerFile.getBoolean(p.getUniqueId().toString() + ".drops-enabled"));
+                data.setLootFilterEntries(new ArrayList<>());
+                getPlayerFilterManager().getPlayerFilterMap().put(p.getUniqueId(), data);
+            } else {
+                PlayerFilterData data = new PlayerFilterData();
+                data.setFilterEnabled(playerFile.getBoolean(p.getUniqueId().toString() + ".drops-enabled"));
+                List playersLootEntries = playerFile.getList(p.getUniqueId().toString() + ".loot-filter-entries");
+                data.setLootFilterEntries(playersLootEntries);
+                getPlayerFilterManager().getPlayerFilterMap().put(p.getUniqueId(), data);
+            }
+
+        }
+    }
 
     public void onEnable() {
         playerFilterManager = new PlayerFilterManager();
@@ -52,21 +101,21 @@ public class TogglePickupsPlugin extends JavaPlugin {
 
         Bukkit.getServer().getLogger().info("Toggleable Drops By Joshuaemq Disabled!");
     }
-    private FileConfiguration playerFile;
+    private FileConfiguration playerFile2;
 
     public void loadPlayerData() {
         if (getDataFolder() != null) {
 
             for (File file : getDataFolder().listFiles()) {
-                playerFile = YamlConfiguration.loadConfiguration(file);
+                playerFile2 = YamlConfiguration.loadConfiguration(file);
 
                 String fileName = file.getName();
                 int index = fileName.indexOf(".");
                 String str = fileName.substring(0, index);
 
                 if (!(fileName.equals("config.yml"))) {
-                    Boolean str1 = playerFile.getBoolean(str + ".drops-enabled");
-                    List str2 = playerFile.getList(str + ".loot-filter-entries");
+                    Boolean str1 = playerFile2.getBoolean(str + ".drops-enabled");
+                    List str2 = playerFile2.getList(str + ".loot-filter-entries");
 
                     PlayerFilterData playerFilterData = new PlayerFilterData();
                     playerFilterData.setFilterEnabled(str1);
