@@ -63,7 +63,7 @@ public class FilterCommand implements CommandExecutor {
             lootFilter.add(Addition);
             p.sendMessage(ChatColor.GREEN + Addition + " was added to your loot filter!");
           } else {
-            p.sendMessage(ChatColor.RED + addition.substring(0, 1).toUpperCase() + " is already in your loot filter!");
+            p.sendMessage(ChatColor.RED + Addition + " is already in your loot filter!");
           }
         } else {
           p.sendMessage(ChatColor.RED + "You must disable ToggleDrops to edit your loot filter!");
@@ -95,7 +95,7 @@ public class FilterCommand implements CommandExecutor {
             lootFilter.remove(Removal);
             p.sendMessage(ChatColor.RED + Removal + " was removed from your loot filter!");
           } else {
-            p.sendMessage(ChatColor.RED + removal.substring(0, 1).toUpperCase() + removal.substring(1) + " is not in your loot filter!");
+            p.sendMessage(ChatColor.RED + Removal + " is not in your loot filter!");
           }
 
         } else {

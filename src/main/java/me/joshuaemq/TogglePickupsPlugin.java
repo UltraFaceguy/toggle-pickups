@@ -27,8 +27,8 @@ public class TogglePickupsPlugin extends JavaPlugin {
         saveTask = new SaveTask(this);
 
         saveTask.runTaskTimer(this,
-                0L,
-                600L
+                4 * 60 * 20L,
+                5 * 60 * 20L
         );
 
         Bukkit.getPluginManager().registerEvents(new ItemPickupListener(this), this);
@@ -44,6 +44,7 @@ public class TogglePickupsPlugin extends JavaPlugin {
     }
 
     public void onDisable() {
+        saveTask.saveAll();
         saveTask.cancel();
         HandlerList.unregisterAll(this);
         playerFilterManager = null;
@@ -51,29 +52,30 @@ public class TogglePickupsPlugin extends JavaPlugin {
 
         Bukkit.getServer().getLogger().info("Toggleable Drops By Joshuaemq Disabled!");
     }
+    private FileConfiguration playerFile;
 
     public void loadPlayerData() {
         if (getDataFolder() != null) {
 
             for (File file : getDataFolder().listFiles()) {
-                FileConfiguration playerFile = YamlConfiguration.loadConfiguration(file);
-
-                Boolean str1 = playerFile.getBoolean(".drops-enabled");
-                List str2 = playerFile.getList(".loot-filter-entries");
-
-                PlayerFilterData playerFilterData = new PlayerFilterData();
-                playerFilterData.setFilterEnabled(str1);
-                playerFilterData.setLootFilterEntries(str2);
+                playerFile = YamlConfiguration.loadConfiguration(file);
 
                 String fileName = file.getName();
                 int index = fileName.indexOf(".");
                 String str = fileName.substring(0, index);
 
-                UUID uuid = UUID.fromString(str);
-                playerFilterManager.getPlayerFilterMap().put(uuid, playerFilterData);
+                if (!(fileName.equals("config.yml"))) {
+                    Boolean str1 = playerFile.getBoolean(str + ".drops-enabled");
+                    List str2 = playerFile.getList(str + ".loot-filter-entries");
+
+                    PlayerFilterData playerFilterData = new PlayerFilterData();
+                    playerFilterData.setFilterEnabled(str1);
+                    playerFilterData.setLootFilterEntries(str2);
+
+                    UUID uuid = UUID.fromString(str);
+                    playerFilterManager.getPlayerFilterMap().put(uuid, playerFilterData);
+                }
             }
-        } else {
-            System.out.println("DATA FOLDER IS NULL");
         }
     }
 
