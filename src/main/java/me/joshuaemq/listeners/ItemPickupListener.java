@@ -24,36 +24,36 @@ public class ItemPickupListener implements Listener {
 
   @EventHandler(priority= EventPriority.HIGH)
   public void onEntityPickup(EntityPickupItemEvent e) {
-      Player playerInEvent = (Player) e.getEntity();
-      if (e.isCancelled() || !(e.getEntity() instanceof Player) || playerInEvent.isSneaking()) {
+      if (e.isCancelled() || !(e.getEntity() instanceof Player)) {
           return;
+      }
+      Player playerInEvent = (Player) e.getEntity();
+      if (playerInEvent.isSneaking()) {
+        return;
       }
       if (!(playerInEvent.hasPermission("toggledrops.use"))) {
         return;
       }
       PlayerFilterData data = plugin.getPlayerFilterManager().getPlayerFilterMap().get(e.getEntity().getUniqueId());
-      if (data == null) {
+      if (data == null || !data.isFilterEnabled()) {
           return;
       }
-      if (data.isFilterEnabled()) {
-          e.setCancelled(true);
-          ItemStack item = e.getItem().getItemStack();
-          if (item.hasItemMeta()) {
-              ItemMeta meta = item.getItemMeta();
-              List<String> lore = meta.getLore();
-              String itemName = item.getItemMeta().getDisplayName();
-              String itemNameNoColor = ChatColor.stripColor(itemName);
-              if ("REWARD!".equals(ChatColor.stripColor(meta.getDisplayName())) || "(Faceguy Crest)".equals(ChatColor.stripColor(meta.getDisplayName()))) {
+      e.setCancelled(true);
+      ItemStack item = e.getItem().getItemStack();
+      if (item.hasItemMeta()) {
+          ItemMeta meta = item.getItemMeta();
+          List<String> lore = meta.getLore();
+          String itemName = item.getItemMeta().getDisplayName();
+          String itemNameNoColor = ChatColor.stripColor(itemName);
+          if ("REWARD!".equals(ChatColor.stripColor(meta.getDisplayName())) || "(Faceguy Crest)".equals(ChatColor.stripColor(meta.getDisplayName()))) {
+              e.setCancelled(false);
+              return;
+          }
+          for (String str : data.getLootFilterEntries()) {
+              if (ChatColor.stripColor(lore.toString()).contains(str) || itemNameNoColor.contains(str)) {
                   e.setCancelled(false);
-                  return;
-              }
-
-              for (String str : data.getLootFilterEntries()) {
-                  if (ChatColor.stripColor(lore.toString()).contains(str) || itemNameNoColor.contains(str)) {
-                      e.setCancelled(false);
-                  }
               }
           }
+      }
     }
   }
-}
