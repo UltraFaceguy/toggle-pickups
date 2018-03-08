@@ -82,6 +82,7 @@ public class TogglePickupsPlugin extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new ItemPickupListener(this), this);
         Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
+
         this.getCommand("toggledrops").setExecutor(new FilterCommand(this));
 
         getConfig().options().copyDefaults(true);

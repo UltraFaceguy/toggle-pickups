@@ -35,7 +35,10 @@ public class ItemPickupListener implements Listener {
       if (data == null) {
           return;
       }
-      if (data.isFilterEnabled()) {
+      if (playerInEvent.isSneaking()) {
+          return;
+      }
+      else if (data.isFilterEnabled()) {
           e.setCancelled(true);
           ItemStack item = e.getItem().getItemStack();
           if (item.hasItemMeta()) {
