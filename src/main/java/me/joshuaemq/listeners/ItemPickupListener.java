@@ -24,10 +24,10 @@ public class ItemPickupListener implements Listener {
 
   @EventHandler(priority= EventPriority.HIGH)
   public void onEntityPickup(EntityPickupItemEvent e) {
-      if (e.isCancelled() || !(e.getEntity() instanceof Player)) {
+      Player playerInEvent = (Player) e.getEntity();
+      if (e.isCancelled() || !(e.getEntity() instanceof Player) || playerInEvent.isSneaking()) {
           return;
       }
-      Player playerInEvent = (Player) e.getEntity();
       if (!(playerInEvent.hasPermission("toggledrops.use"))) {
         return;
       }
@@ -35,10 +35,7 @@ public class ItemPickupListener implements Listener {
       if (data == null) {
           return;
       }
-      if (playerInEvent.isSneaking()) {
-          return;
-      }
-      else if (data.isFilterEnabled()) {
+      if (data.isFilterEnabled()) {
           e.setCancelled(true);
           ItemStack item = e.getItem().getItemStack();
           if (item.hasItemMeta()) {
