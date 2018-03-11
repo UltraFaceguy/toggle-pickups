@@ -43,7 +43,8 @@ public class SaveTask extends BukkitRunnable {
         }
     }
 
-    List<String> playersToRemove = new ArrayList<>();
+    private List<String> playersToRemove = new ArrayList<>();
+
     public void run() {
 
         if (plugin.getDataFolder() != null) {

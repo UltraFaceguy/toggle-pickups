@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.UUID;
 
 import me.joshuaemq.commands.FilterCommand;
+import me.joshuaemq.data.FilterSetting;
 import me.joshuaemq.data.PlayerFilterData;
+import me.joshuaemq.listeners.InventoryClickListener;
 import me.joshuaemq.listeners.ItemPickupListener;
 import me.joshuaemq.listeners.JoinListener;
+import me.joshuaemq.managers.FilterGuiManager;
 import me.joshuaemq.managers.PlayerFilterManager;
 import me.joshuaemq.tasks.SaveTask;
 import org.bukkit.Bukkit;
@@ -22,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class TogglePickupsPlugin extends JavaPlugin {
 
     private PlayerFilterManager playerFilterManager;
+    private FilterGuiManager filterGuiManager;
 
     private SaveTask saveTask;
 
@@ -63,8 +67,13 @@ public class TogglePickupsPlugin extends JavaPlugin {
             } else {
                 PlayerFilterData data = new PlayerFilterData();
                 data.setFilterEnabled(playerFile.getBoolean(p.getUniqueId().toString() + ".drops-enabled"));
-                List playersLootEntries = playerFile.getList(p.getUniqueId().toString() + ".loot-filter-entries");
-                data.setLootFilterEntries(playersLootEntries);
+                List<String> playersLootEntries = playerFile.getStringList(p.getUniqueId().toString() + ".loot-filter-entries");
+                List<FilterSetting> playerSettings = new ArrayList<>();
+                for (String str : playersLootEntries) {
+                    FilterSetting setting = FilterSetting.valueOf(str);
+                    playerSettings.add(setting);
+                }
+                data.setLootFilterEntries(playerSettings);
                 getPlayerFilterManager().getPlayerFilterMap().put(p.getUniqueId(), data);
             }
 
@@ -73,6 +82,7 @@ public class TogglePickupsPlugin extends JavaPlugin {
 
     public void onEnable() {
         playerFilterManager = new PlayerFilterManager();
+        filterGuiManager = new FilterGuiManager(this);
         saveTask = new SaveTask(this);
 
         saveTask.runTaskTimer(this,
@@ -81,6 +91,7 @@ public class TogglePickupsPlugin extends JavaPlugin {
         );
 
         Bukkit.getPluginManager().registerEvents(new ItemPickupListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new InventoryClickListener(this), this);
         Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
 
         this.getCommand("toggledrops").setExecutor(new FilterCommand(this));
@@ -98,6 +109,7 @@ public class TogglePickupsPlugin extends JavaPlugin {
         saveTask.cancel();
         HandlerList.unregisterAll(this);
         playerFilterManager = null;
+        filterGuiManager = null;
         saveTask = null;
 
         Bukkit.getServer().getLogger().info("Toggleable Drops By Joshuaemq Disabled!");
@@ -115,12 +127,18 @@ public class TogglePickupsPlugin extends JavaPlugin {
                 String str = fileName.substring(0, index);
 
                 if (!(fileName.equals("config.yml"))) {
-                    Boolean str1 = playerFile2.getBoolean(str + ".drops-enabled");
-                    List str2 = playerFile2.getList(str + ".loot-filter-entries");
+                    Boolean dropsEnabled = playerFile2.getBoolean(str + ".drops-enabled");
+                    List<String> playerFilterEntries = playerFile2.getStringList(str + ".loot-filter-entries");
+
+                    List<FilterSetting> playerSettings = new ArrayList<>();
+                    for (String s : playerFilterEntries) {
+                        FilterSetting setting = FilterSetting.valueOf(s);
+                        playerSettings.add(setting);
+                    }
 
                     PlayerFilterData playerFilterData = new PlayerFilterData();
-                    playerFilterData.setFilterEnabled(str1);
-                    playerFilterData.setLootFilterEntries(str2);
+                    playerFilterData.setFilterEnabled(dropsEnabled);
+                    playerFilterData.setLootFilterEntries(playerSettings);
 
                     UUID uuid = UUID.fromString(str);
                     playerFilterManager.getPlayerFilterMap().put(uuid, playerFilterData);
@@ -131,5 +149,8 @@ public class TogglePickupsPlugin extends JavaPlugin {
 
     public PlayerFilterManager getPlayerFilterManager () {
         return playerFilterManager;
+    }
+    public FilterGuiManager getFilterGuiManager () {
+        return filterGuiManager;
     }
 }

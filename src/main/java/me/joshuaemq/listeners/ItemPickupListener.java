@@ -1,6 +1,7 @@
 package me.joshuaemq.listeners;
 
 import me.joshuaemq.TogglePickupsPlugin;
+import me.joshuaemq.data.FilterSetting;
 import me.joshuaemq.data.PlayerFilterData;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -24,36 +25,46 @@ public class ItemPickupListener implements Listener {
 
   @EventHandler(priority= EventPriority.HIGH)
   public void onEntityPickup(EntityPickupItemEvent e) {
-      if (e.isCancelled() || !(e.getEntity() instanceof Player)) {
-          return;
-      }
-      Player playerInEvent = (Player) e.getEntity();
-      if (playerInEvent.isSneaking()) {
+    if (e.isCancelled() || !(e.getEntity() instanceof Player)) {
+      return;
+    }
+    Player playerInEvent = (Player) e.getEntity();
+    if (playerInEvent.isSneaking()) {
+      return;
+    }
+    if (!(playerInEvent.hasPermission("toggledrops.use"))) {
+      return;
+    }
+    PlayerFilterData data = plugin.getPlayerFilterManager().getPlayerFilterMap().get(e.getEntity().getUniqueId());
+    if (data == null || !data.isFilterEnabled()) {
+      return;
+    }
+    ItemStack item = e.getItem().getItemStack();
+    if (item.hasItemMeta()) {
+      ItemMeta meta = item.getItemMeta();
+      List<String> lore = meta.getLore();
+      String itemName = item.getItemMeta().getDisplayName();
+      String itemNameNoColor = ChatColor.stripColor(itemName);
+      if ("REWARD!".equals(itemNameNoColor) || "(Faceguy Crest)".equals(itemNameNoColor)) {
         return;
       }
-      if (!(playerInEvent.hasPermission("toggledrops.use"))) {
-        return;
-      }
-      PlayerFilterData data = plugin.getPlayerFilterManager().getPlayerFilterMap().get(e.getEntity().getUniqueId());
-      if (data == null || !data.isFilterEnabled()) {
+      String itemLoreNoColor = ChatColor.stripColor(lore.toString());
+      for (FilterSetting setting : data.getLootFilterEntries()) {
+        if (setting.getLoreFilter() != null && itemLoreNoColor.contains(setting.getLoreFilter())) {
+          e.setCancelled(true);
           return;
-      }
-      e.setCancelled(true);
-      ItemStack item = e.getItem().getItemStack();
-      if (item.hasItemMeta()) {
-          ItemMeta meta = item.getItemMeta();
-          List<String> lore = meta.getLore();
-          String itemName = item.getItemMeta().getDisplayName();
-          String itemNameNoColor = ChatColor.stripColor(itemName);
-          if ("REWARD!".equals(ChatColor.stripColor(meta.getDisplayName())) || "(Faceguy Crest)".equals(ChatColor.stripColor(meta.getDisplayName()))) {
-              e.setCancelled(false);
-              return;
+        }
+        if (setting.getNameFilter() != null && itemNameNoColor.contains(setting.getNameFilter())) {
+          if (setting.getSecondaryNameFilter() == null) {
+            e.setCancelled(true);
+            return;
           }
-          for (String str : data.getLootFilterEntries()) {
-              if (ChatColor.stripColor(lore.toString()).contains(str) || itemNameNoColor.contains(str)) {
-                  e.setCancelled(false);
-              }
+          if (itemNameNoColor.contains(setting.getSecondaryNameFilter())) {
+            e.setCancelled(true);
+            return;
           }
+        }
       }
     }
   }
+}

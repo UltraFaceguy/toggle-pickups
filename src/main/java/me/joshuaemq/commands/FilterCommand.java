@@ -1,6 +1,7 @@
 package me.joshuaemq.commands;
 
 import me.joshuaemq.TogglePickupsPlugin;
+import me.joshuaemq.data.FilterSetting;
 import me.joshuaemq.data.PlayerFilterData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,24 +46,20 @@ public class FilterCommand implements CommandExecutor {
             return false;
           }
 
-          String addition = "";
-          int i = 1;
-          while (i < args.length) {
-            addition = String.valueOf(addition) + args[i];
-            ++i;
-          }
-          if (!((addition = addition.trim()).equalsIgnoreCase("Common") || addition.equalsIgnoreCase("Uncommon") || addition.equalsIgnoreCase("Rare") || addition.equalsIgnoreCase("Epic") || addition.equalsIgnoreCase("Unique" ) || addition.equalsIgnoreCase("Gem" ) || addition.equalsIgnoreCase("Enchantment" ) || addition.equalsIgnoreCase("Scroll" ))) {
-            p.sendMessage(ChatColor.RED + "Invalid Argument");
+          FilterSetting setting;
+          try {
+            setting = FilterSetting.valueOf("" + args[1]);
+          } catch (Exception e) {
+            p.sendMessage(ChatColor.RED + "" + args[1] + " is not a valid filter option!");
             return false;
           }
-          String Addition = String.valueOf(addition.substring(0, 1).toUpperCase()) + addition.substring(1);
 
-          if (!(data.getLootFilterEntries().contains(Addition))) {
-            List<String> lootFilter = data.getLootFilterEntries();
-            lootFilter.add(Addition);
-            p.sendMessage(ChatColor.GREEN + Addition + " was added to your loot filter!");
+          if (!(data.getLootFilterEntries().contains(setting))) {
+            List<FilterSetting> lootFilter = data.getLootFilterEntries();
+            lootFilter.add(setting);
+            p.sendMessage(ChatColor.GREEN + setting.getName() + " was added to your loot filter!");
           } else {
-            p.sendMessage(ChatColor.RED + Addition + " is already in your loot filter!");
+            p.sendMessage(ChatColor.RED + setting.getName() + " is already in your loot filter!");
           }
         } else {
           p.sendMessage(ChatColor.RED + "You must disable ToggleDrops to edit your loot filter!");
@@ -77,24 +74,20 @@ public class FilterCommand implements CommandExecutor {
               p.sendMessage(ChatColor.YELLOW + "Options: " + ChatColor.WHITE + "Common" + ChatColor.BLUE + " Uncommon" + ChatColor.DARK_PURPLE + " Rare" + ChatColor.RED + " Epic" + ChatColor.GOLD + " Unique" + ChatColor.BLUE + " Enchantment" + ChatColor.GOLD + " Gem" + ChatColor.DARK_GREEN + " Scroll");
             return false;
           }
-          String removal = "";
-          int i = 1;
-          while (i < args.length) {
-            removal = String.valueOf(removal) + args[i];
-            ++i;
-          }
-            if (!((removal = removal.trim()).equalsIgnoreCase("Common") || removal.equalsIgnoreCase("Uncommon") || removal.equalsIgnoreCase("Rare") || removal.equalsIgnoreCase("Epic") || removal.equalsIgnoreCase("Unique" ) || removal.equalsIgnoreCase("Gem" ) || removal.equalsIgnoreCase("Enchantment" ) || removal.equalsIgnoreCase("Scroll" ))) {
-            p.sendMessage(ChatColor.RED + "Invalid Argument");
+          FilterSetting setting;
+          try {
+            setting = FilterSetting.valueOf("" + args[1]);
+          } catch (Exception e) {
+            p.sendMessage(ChatColor.RED + "" + args[1] + " is not a valid filter option!");
             return false;
           }
 
-          String Removal = String.valueOf(removal.substring(0, 1).toUpperCase()) + removal.substring(1);
-          if (data.getLootFilterEntries().contains(Removal)) {
-            List<String> lootFilter = data.getLootFilterEntries();
-            lootFilter.remove(Removal);
-            p.sendMessage(ChatColor.RED + Removal + " was removed from your loot filter!");
+          if (data.getLootFilterEntries().contains(setting)) {
+            List<FilterSetting> lootFilter = data.getLootFilterEntries();
+            lootFilter.remove(setting);
+            p.sendMessage(ChatColor.RED + setting.getName() + " was removed from your loot filter!");
           } else {
-            p.sendMessage(ChatColor.RED + Removal + " is not in your loot filter!");
+            p.sendMessage(ChatColor.RED + setting.getName() + " is not in your loot filter!");
           }
 
         } else {
@@ -103,8 +96,10 @@ public class FilterCommand implements CommandExecutor {
         }
 
       } else if (args[0].equalsIgnoreCase("list")) {
-        p.sendMessage(ChatColor.GREEN + "Filtered Items: " + ChatColor.RED + data.getLootFilterEntries().toString().trim());
-
+        p.sendMessage(
+            ChatColor.GREEN + "Filtered Items: " + ChatColor.RED + data.getLootFilterEntries().toString().trim());
+      } else if (args[0].equalsIgnoreCase("menu")) {
+        plugin.getFilterGuiManager().open(p);
       } else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
         p.sendMessage(ChatColor.GREEN + "-=+=-" + ChatColor.GOLD + " Toggle Drops " + ChatColor.GREEN + "-=+=-");
         p.sendMessage(ChatColor.GRAY + "Toggle Drops allows you to configure a whitelist of items you are able to pickup!");

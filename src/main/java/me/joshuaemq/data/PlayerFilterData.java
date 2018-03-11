@@ -5,13 +5,13 @@ import java.util.List;
 public class PlayerFilterData {
 
   private boolean filterEnabled;
-  private List<String> lootFilterEntries;
+  private List<FilterSetting> lootFilterEntries;
 
-  public List<String> getLootFilterEntries() {
+  public List<FilterSetting> getLootFilterEntries() {
     return lootFilterEntries;
   }
 
-  public void setLootFilterEntries(List<String> lootFilterEntries) {
+  public void setLootFilterEntries(List<FilterSetting> lootFilterEntries) {
     this.lootFilterEntries = lootFilterEntries;
   }
 
