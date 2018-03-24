@@ -61,7 +61,6 @@ public class FilterGuiMenu {
   }
 
   public static void setToggleButton(ItemStack itemStack, String settingName, boolean enabled) {
-    System.out.println("en " + enabled);
     ItemMeta meta = itemStack.getItemMeta();
     List<String> lore = new ArrayList<>();
     lore.add(ChatColor.WHITE + "" + ChatColor.BOLD + "Click to toggle!");
