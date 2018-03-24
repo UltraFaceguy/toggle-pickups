@@ -51,6 +51,12 @@ public class ItemPickupListener implements Listener {
       if ("REWARD!".equals(itemNameNoColor) || "(Faceguy Crest)".equals(itemNameNoColor)) {
         return;
       }
+      if (lore == null) {
+        if (data.getLootFilterEntries().contains(FilterSetting.JUNK)) {
+          e.setCancelled(true);
+        }
+        return;
+      }
       String itemLoreNoColor = ChatColor.stripColor(lore.toString());
       for (FilterSetting setting : data.getLootFilterEntries()) {
         if (setting.getLoreFilter() != null && itemLoreNoColor.contains(setting.getLoreFilter())) {

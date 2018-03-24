@@ -2,6 +2,7 @@ package me.joshuaemq.data;
 
 public enum FilterSetting {
 
+  JUNK("Junk", null, null, null, null),
   COMMON("Common", null, null, "Common", null),
   UNCOMMON("Uncommon", null, null, "Uncommon", null),
   RARE("Rare", null, null, "Rare", null),
