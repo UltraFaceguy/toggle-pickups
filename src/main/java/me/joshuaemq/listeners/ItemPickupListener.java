@@ -43,35 +43,39 @@ public class ItemPickupListener implements Listener {
       return;
     }
     ItemStack item = e.getItem().getItemStack();
-    if (item.hasItemMeta()) {
-      ItemMeta meta = item.getItemMeta();
-      List<String> lore = meta.getLore();
-      String itemName = item.getItemMeta().getDisplayName();
-      String itemNameNoColor = ChatColor.stripColor(itemName);
-      if ("REWARD!".equals(itemNameNoColor) || "(Faceguy Crest)".equals(itemNameNoColor)) {
+    if (!item.hasItemMeta()) {
+      if (data.getLootFilterEntries().contains(FilterSetting.JUNK)) {
+        e.setCancelled(true);
         return;
       }
-      if (lore == null) {
-        if (data.getLootFilterEntries().contains(FilterSetting.JUNK)) {
-          e.setCancelled(true);
-        }
+    }
+    ItemMeta meta = item.getItemMeta();
+    List<String> lore = meta.getLore();
+    if (lore == null || lore.size() == 0) {
+      if (data.getLootFilterEntries().contains(FilterSetting.JUNK)) {
+        e.setCancelled(true);
         return;
       }
-      String itemLoreNoColor = ChatColor.stripColor(lore.toString());
-      for (FilterSetting setting : data.getLootFilterEntries()) {
-        if (setting.getLoreFilter() != null && itemLoreNoColor.contains(setting.getLoreFilter())) {
+    }
+    String itemName = item.getItemMeta().getDisplayName();
+    String itemNameNoColor = ChatColor.stripColor(itemName);
+    if ("REWARD!".equals(itemNameNoColor) || "(Faceguy Crest)".equals(itemNameNoColor)) {
+      return;
+    }
+    String itemLoreNoColor = ChatColor.stripColor(lore.toString());
+    for (FilterSetting setting : data.getLootFilterEntries()) {
+      if (setting.getLoreFilter() != null && itemLoreNoColor.contains(setting.getLoreFilter())) {
+        e.setCancelled(true);
+        return;
+      }
+      if (setting.getNameFilter() != null && itemNameNoColor.contains(setting.getNameFilter())) {
+        if (setting.getSecondaryNameFilter() == null) {
           e.setCancelled(true);
           return;
         }
-        if (setting.getNameFilter() != null && itemNameNoColor.contains(setting.getNameFilter())) {
-          if (setting.getSecondaryNameFilter() == null) {
-            e.setCancelled(true);
-            return;
-          }
-          if (itemNameNoColor.endsWith(setting.getSecondaryNameFilter())) {
-            e.setCancelled(true);
-            return;
-          }
+        if (itemNameNoColor.endsWith(setting.getSecondaryNameFilter())) {
+          e.setCancelled(true);
+          return;
         }
       }
     }
