@@ -36,7 +36,10 @@ public class ItemPickupListener implements Listener {
       return;
     }
     PlayerFilterData data = plugin.getPlayerFilterManager().getPlayerFilterMap().get(e.getEntity().getUniqueId());
-    if (data == null || !data.isFilterEnabled()) {
+    //if (data == null || !data.isFilterEnabled()) {
+    //  return;
+    //}
+    if (data == null) {
       return;
     }
     ItemStack item = e.getItem().getItemStack();

@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.util.*;
 
 import me.joshuaemq.TogglePickupsPlugin;
+import me.joshuaemq.data.FilterSetting;
 import me.joshuaemq.data.PlayerFilterData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class SaveTask extends BukkitRunnable {
@@ -28,11 +28,18 @@ public class SaveTask extends BukkitRunnable {
 
                 PlayerFilterData playerData = plugin.getPlayerFilterManager().getPlayerFilterMap().get(key);
 
-                playerFile = new File(plugin.getDataFolder(), key.toString() + ".yml");
+                playerFile = new File(plugin.getDataFolder() + "/data", key.toString() + ".yml");
+                if (!playerFile.exists()) {
+                    plugin.createPlayerFile(key);
+                }
                 config = YamlConfiguration.loadConfiguration(playerFile);
 
-                config.set(key + ".loot-filter-entries", playerData.getLootFilterEntries());
-                config.set(key + ".drops-enabled", playerData.isFilterEnabled());
+                List<String> entries = new ArrayList<>();
+                for (FilterSetting setting : playerData.getLootFilterEntries()) {
+                    entries.add(setting.toString());
+                }
+                config.set(key + ".loot-filter-entries", entries);
+                //config.set(key + ".drops-enabled", playerData.isFilterEnabled());
 
                 try {
                     config.save(playerFile);
@@ -52,11 +59,11 @@ public class SaveTask extends BukkitRunnable {
 
                 PlayerFilterData playerData = plugin.getPlayerFilterManager().getPlayerFilterMap().get(key);
 
-                playerFile = new File(plugin.getDataFolder(), key.toString() + ".yml");
+                playerFile = new File(plugin.getDataFolder() + "/data", key.toString() + ".yml");
                 config = YamlConfiguration.loadConfiguration(playerFile);
 
-                config.set(key + ".drops-enabled", playerData.isFilterEnabled());
-                config.set(key + ".loot-filter-entries", playerData.getLootFilterEntries());
+                //config.set(key + ".drops-enabled", playerData.isFilterEnabled());
+                config.set(key + ".loot-filter-entries", playerData.getLootFilterEntries().toString());
 
                 try {
                     config.save(playerFile);

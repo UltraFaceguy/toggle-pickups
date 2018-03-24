@@ -1,53 +1,46 @@
 package me.joshuaemq.menus;
 
+import java.util.ArrayList;
+import java.util.List;
 import me.joshuaemq.TogglePickupsPlugin;
 import me.joshuaemq.data.FilterSetting;
 import me.joshuaemq.data.PlayerFilterData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 
 public class FilterGuiMenu {
 
   private TogglePickupsPlugin plugin;
   private Inventory inventory;
-  private static ItemStack borderItem = generateBorderItem();
+  private final static ItemStack BORDER_ITEM = generateBorderItem();
+  private final static String MENU_NAME = ChatColor.DARK_GREEN + "LootFilter";
 
   public FilterGuiMenu(TogglePickupsPlugin plugin, Player owner) {
     this.plugin = plugin;
-    this.inventory = Bukkit.createInventory(owner, 36, ChatColor.GREEN + "LootFilter");
+    this.inventory = Bukkit.createInventory(owner, 36, MENU_NAME);
     fillInventory(owner);
     openInventory(owner);
   }
 
   private void fillInventory(Player owner) {
-    for (int i = 0; i <= inventory.getSize(); i++) {
+    for (int i = 0; i <= inventory.getSize() - 1; i++) {
       // Fills in the border.
-      if (i < 9 || i % 8 == 0 || i % 9 == 0 || i > 27) {
-        inventory.setItem(i, borderItem.clone());
+      if (i < 10 || i == 17 || i == 18 || i > 25) {
+        inventory.setItem(i, BORDER_ITEM.clone());
         continue;
       }
       // Starts at slot 10 for settings icons
       int settingSlot = 10;
       PlayerFilterData data = plugin.getPlayerFilterManager().getPlayerFilterMap().get(owner.getUniqueId());
       for (FilterSetting setting : FilterSetting.values()) {
-        ItemStack settingIcon = new ItemStack(Material.WOOL);
-        MaterialData materialData = settingIcon.getData();
-        ItemMeta meta = settingIcon.getItemMeta();
-        if (data.getLootFilterEntries().contains(setting)) {
-          meta.setDisplayName(ChatColor.RED + setting.getName());
-          materialData.setData(DyeColor.RED.getDyeData());
-        } else {
-          meta.setDisplayName(ChatColor.GREEN + setting.getName());
-          materialData.setData(DyeColor.GREEN.getDyeData());
-        }
-        settingIcon.setData(materialData);
+        ItemStack settingIcon = new ItemStack(Material.EMERALD_BLOCK);
+        setToggleButton(settingIcon, setting.getName(), data.getLootFilterEntries().contains(setting));
         inventory.setItem(settingSlot, settingIcon);
         settingSlot++;
         // If we reach the border, roll over ot next line. Yeah, its ugly.
@@ -58,12 +51,31 @@ public class FilterGuiMenu {
     }
   }
 
-  public void openInventory(Player player) {
+  private void openInventory(Player player) {
+    player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 0.7f);
     player.openInventory(inventory);
   }
 
   public Inventory getInventory() {
     return inventory;
+  }
+
+  public static void setToggleButton(ItemStack itemStack, String settingName, boolean enabled) {
+    System.out.println("en " + enabled);
+    ItemMeta meta = itemStack.getItemMeta();
+    List<String> lore = new ArrayList<>();
+    lore.add(ChatColor.WHITE + "" + ChatColor.BOLD + "Click to toggle!");
+    if (enabled) {
+      meta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + settingName);
+      itemStack.setType(Material.REDSTONE_BLOCK);
+      lore.add(ChatColor.GRAY + "Item pickup " + ChatColor.RED + "" + ChatColor.BOLD + "DISABLED");
+    } else {
+      meta.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + settingName);
+      itemStack.setType(Material.EMERALD_BLOCK);
+      lore.add(ChatColor.GRAY + "Item pickup " + ChatColor.GREEN + "" + ChatColor.BOLD + "ENABLED");
+    }
+    meta.setLore(lore);
+    itemStack.setItemMeta(meta);
   }
 
   private static ItemStack generateBorderItem() {

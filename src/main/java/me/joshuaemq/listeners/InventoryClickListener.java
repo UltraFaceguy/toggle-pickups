@@ -3,8 +3,10 @@ package me.joshuaemq.listeners;
 import me.joshuaemq.TogglePickupsPlugin;
 import me.joshuaemq.data.FilterSetting;
 import me.joshuaemq.data.PlayerFilterData;
+import me.joshuaemq.menus.FilterGuiMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -45,13 +47,15 @@ public class InventoryClickListener implements Listener {
         PlayerFilterData data = plugin.getPlayerFilterManager().getPlayerFilterMap().get(owner.getUniqueId());
         if (data.getLootFilterEntries().contains(setting)) {
           data.getLootFilterEntries().remove(setting);
+          owner.playSound(owner.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
         } else {
           data.getLootFilterEntries().add(setting);
+          owner.playSound(owner.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.75f);
         }
+        FilterGuiMenu.setToggleButton(stack, setting.getName(), data.getLootFilterEntries().contains(setting));
         plugin.getPlayerFilterManager().getPlayerFilterMap().put(owner.getUniqueId(), data);
         return;
       }
     }
   }
-
 }

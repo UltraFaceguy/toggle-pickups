@@ -11,7 +11,6 @@ import me.joshuaemq.data.FilterSetting;
 import me.joshuaemq.data.PlayerFilterData;
 import me.joshuaemq.listeners.InventoryClickListener;
 import me.joshuaemq.listeners.ItemPickupListener;
-import me.joshuaemq.listeners.JoinListener;
 import me.joshuaemq.managers.FilterGuiManager;
 import me.joshuaemq.managers.PlayerFilterManager;
 import me.joshuaemq.tasks.SaveTask;
@@ -34,9 +33,12 @@ public class TogglePickupsPlugin extends JavaPlugin {
     private FileConfiguration playerFile;
 
     public void createPlayerFile(Player player) {
+        createPlayerFile(player.getUniqueId());
+    }
 
-        Player p = player.getPlayer();
-        fileName = new File(getDataFolder(), p.getUniqueId().toString() + ".yml");
+    public void createPlayerFile(UUID uuid) {
+
+        fileName = new File(getDataFolder() + "/data", uuid + ".yml");
 
         if (!fileName.exists()) {
             try {
@@ -53,30 +55,28 @@ public class TogglePickupsPlugin extends JavaPlugin {
             }
         }
 
-        if (!(getPlayerFilterManager().getPlayerFilterMap().containsKey(p.getUniqueId()))) {
+        if (!(getPlayerFilterManager().getPlayerFilterMap().containsKey(uuid))) {
 
-            File playersFile = new File(getDataFolder(), p.getUniqueId().toString() + ".yml");
+            File playersFile = new File(getDataFolder() + "/data", uuid + ".yml");
             playerFile = YamlConfiguration.loadConfiguration(playersFile);
 
-            if (playerFile.get(p.getUniqueId().toString()) == null) {
-
+            if (playerFile.get(uuid.toString()) == null) {
                 PlayerFilterData data = new PlayerFilterData();
-                data.setFilterEnabled(playerFile.getBoolean(p.getUniqueId().toString() + ".drops-enabled"));
+                //data.setFilterEnabled(playerFile.getBoolean(uuid + ".drops-enabled"));
                 data.setLootFilterEntries(new ArrayList<>());
-                getPlayerFilterManager().getPlayerFilterMap().put(p.getUniqueId(), data);
+                getPlayerFilterManager().getPlayerFilterMap().put(uuid, data);
             } else {
                 PlayerFilterData data = new PlayerFilterData();
-                data.setFilterEnabled(playerFile.getBoolean(p.getUniqueId().toString() + ".drops-enabled"));
-                List<String> playersLootEntries = playerFile.getStringList(p.getUniqueId().toString() + ".loot-filter-entries");
+                //data.setFilterEnabled(playerFile.getBoolean(uuid + ".drops-enabled"));
+                List<String> playersLootEntries = playerFile.getStringList(uuid + ".loot-filter-entries");
                 List<FilterSetting> playerSettings = new ArrayList<>();
                 for (String str : playersLootEntries) {
                     FilterSetting setting = FilterSetting.valueOf(str);
                     playerSettings.add(setting);
                 }
                 data.setLootFilterEntries(playerSettings);
-                getPlayerFilterManager().getPlayerFilterMap().put(p.getUniqueId(), data);
+                getPlayerFilterManager().getPlayerFilterMap().put(uuid, data);
             }
-
         }
     }
 
@@ -92,7 +92,6 @@ public class TogglePickupsPlugin extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new ItemPickupListener(this), this);
         Bukkit.getPluginManager().registerEvents(new InventoryClickListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
 
         this.getCommand("toggledrops").setExecutor(new FilterCommand(this));
 
@@ -114,36 +113,39 @@ public class TogglePickupsPlugin extends JavaPlugin {
 
         Bukkit.getServer().getLogger().info("Toggleable Drops By Joshuaemq Disabled!");
     }
-    private FileConfiguration playerFile2;
 
     public void loadPlayerData() {
-        if (getDataFolder() != null) {
+        if (getDataFolder() == null) {
+            System.out.println("ERROR! NO DATA FOLDER FOUND! UH OH!");
+            return;
+        }
+        File dataFile = new File(getDataFolder() + "/data");
+        if (!dataFile.exists()) {
+            dataFile.mkdir();
+        }
+        FileConfiguration playerFile2;
+        for (File file : dataFile.listFiles()) {
+            playerFile2 = YamlConfiguration.loadConfiguration(file);
 
-            for (File file : getDataFolder().listFiles()) {
-                playerFile2 = YamlConfiguration.loadConfiguration(file);
+            String fileName = file.getName();
+            int index = fileName.indexOf(".");
+            String str = fileName.substring(0, index);
 
-                String fileName = file.getName();
-                int index = fileName.indexOf(".");
-                String str = fileName.substring(0, index);
+            Boolean dropsEnabled = playerFile2.getBoolean(str + ".drops-enabled");
+            List<String> playerFilterEntries = playerFile2.getStringList(str + ".loot-filter-entries");
 
-                if (!(fileName.equals("config.yml"))) {
-                    Boolean dropsEnabled = playerFile2.getBoolean(str + ".drops-enabled");
-                    List<String> playerFilterEntries = playerFile2.getStringList(str + ".loot-filter-entries");
-
-                    List<FilterSetting> playerSettings = new ArrayList<>();
-                    for (String s : playerFilterEntries) {
-                        FilterSetting setting = FilterSetting.valueOf(s);
-                        playerSettings.add(setting);
-                    }
-
-                    PlayerFilterData playerFilterData = new PlayerFilterData();
-                    playerFilterData.setFilterEnabled(dropsEnabled);
-                    playerFilterData.setLootFilterEntries(playerSettings);
-
-                    UUID uuid = UUID.fromString(str);
-                    playerFilterManager.getPlayerFilterMap().put(uuid, playerFilterData);
-                }
+            List<FilterSetting> playerSettings = new ArrayList<>();
+            for (String s : playerFilterEntries) {
+                FilterSetting setting = FilterSetting.valueOf(s);
+                playerSettings.add(setting);
             }
+
+            PlayerFilterData playerFilterData = new PlayerFilterData();
+            //playerFilterData.setFilterEnabled(dropsEnabled);
+            playerFilterData.setLootFilterEntries(playerSettings);
+
+            UUID uuid = UUID.fromString(str);
+            playerFilterManager.getPlayerFilterMap().put(uuid, playerFilterData);
         }
     }
 
