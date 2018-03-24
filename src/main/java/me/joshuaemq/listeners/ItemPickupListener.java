@@ -62,7 +62,7 @@ public class ItemPickupListener implements Listener {
             e.setCancelled(true);
             return;
           }
-          if (itemNameNoColor.contains(setting.getSecondaryNameFilter())) {
+          if (itemNameNoColor.endsWith(setting.getSecondaryNameFilter())) {
             e.setCancelled(true);
             return;
           }
