@@ -46,16 +46,16 @@ public class ItemPickupListener implements Listener {
     if (!item.hasItemMeta()) {
       if (data.getLootFilterEntries().contains(FilterSetting.JUNK)) {
         e.setCancelled(true);
-        return;
       }
+      return;
     }
     ItemMeta meta = item.getItemMeta();
     List<String> lore = meta.getLore();
     if (lore == null || lore.size() == 0) {
       if (data.getLootFilterEntries().contains(FilterSetting.JUNK)) {
         e.setCancelled(true);
-        return;
       }
+      return;
     }
     String itemName = item.getItemMeta().getDisplayName();
     String itemNameNoColor = ChatColor.stripColor(itemName);
