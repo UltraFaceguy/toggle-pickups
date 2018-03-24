@@ -108,6 +108,7 @@ public class TogglePickupsPlugin extends JavaPlugin {
         saveTask.cancel();
         HandlerList.unregisterAll(this);
         playerFilterManager = null;
+        filterGuiManager.closeAllMenus();
         filterGuiManager = null;
         saveTask = null;
 

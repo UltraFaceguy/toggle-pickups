@@ -25,4 +25,11 @@ public class FilterGuiManager {
     FilterGuiMenu menu = new FilterGuiMenu(plugin, player);
     openMenus.add(menu.getInventory());
   }
+
+  public void closeAllMenus() {
+    for (Inventory inventory : openMenus) {
+      ((Player)inventory.getHolder()).closeInventory();
+    }
+    openMenus = new ArrayList<>();
+  }
 }
