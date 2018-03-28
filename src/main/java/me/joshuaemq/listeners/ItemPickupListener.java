@@ -1,7 +1,5 @@
 package me.joshuaemq.listeners;
 
-import static sun.audio.AudioPlayer.player;
-
 import me.joshuaemq.TogglePickupsPlugin;
 import me.joshuaemq.data.FilterSetting;
 import me.joshuaemq.data.PlayerFilterData;
@@ -35,7 +33,7 @@ public class ItemPickupListener implements Listener {
     if (playerInEvent.isSneaking()) {
       return;
     }
-    if (event.getItem().hasMetadata("TD-" + player.getName())) {
+    if (event.getItem().hasMetadata("TD-" + playerInEvent.getName())) {
       event.setCancelled(true);
       return;
     }
@@ -57,16 +55,16 @@ public class ItemPickupListener implements Listener {
       return;
     }
     ItemMeta meta = item.getItemMeta();
+    String itemName = item.getItemMeta().getDisplayName();
+    String itemNameNoColor = ChatColor.stripColor(itemName);
+    if ("REWARD!".equals(itemNameNoColor) || "(Faceguy Crest)".equals(itemNameNoColor)) {
+      return;
+    }
     List<String> lore = meta.getLore();
     if (lore == null || lore.size() == 0) {
       if (data.getLootFilterEntries().contains(FilterSetting.JUNK)) {
         cancelItemPickupAndSetItemMeta(event);
       }
-      return;
-    }
-    String itemName = item.getItemMeta().getDisplayName();
-    String itemNameNoColor = ChatColor.stripColor(itemName);
-    if ("REWARD!".equals(itemNameNoColor) || "(Faceguy Crest)".equals(itemNameNoColor)) {
       return;
     }
     String itemLoreNoColor = ChatColor.stripColor(lore.toString());
@@ -89,13 +87,13 @@ public class ItemPickupListener implements Listener {
   }
 
   private void cancelItemPickupAndSetItemMeta(EntityPickupItemEvent event) {
-    Player player = (Player) event.getEntity();
-    event.getItem().setMetadata("TD-" + player.getName(), new FixedMetadataValue(plugin, true));
+    Player eventPlayer = (Player) event.getEntity();
+    event.getItem().setMetadata("TD-" + eventPlayer.getName(), new FixedMetadataValue(plugin, true));
     Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
       @Override
       public void run() {
-        if (event.getItem().isValid()) {
-          event.getItem().removeMetadata("TD-" + player.getName(), plugin);
+        if (event.getItem().isValid() && event.getItem().hasMetadata("TD-" + eventPlayer.getName())) {
+          event.getItem().removeMetadata("TD-" + eventPlayer.getName(), plugin);
         }
       }
     }, 60L);
