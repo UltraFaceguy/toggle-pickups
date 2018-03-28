@@ -23,8 +23,11 @@ public class InventoryClickListener implements Listener {
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
-  public void onEntityPickup(InventoryClickEvent e) {
-    if (!plugin.getFilterGuiManager().getOpenMenus().contains(e.getClickedInventory())) {
+  public void onInvyClick(InventoryClickEvent e) {
+    if (e.getWhoClicked().getOpenInventory() == null || e.getWhoClicked().getOpenInventory().getTopInventory() == null) {
+      return;
+    }
+    if (!plugin.getFilterGuiManager().getOpenMenus().contains(e.getWhoClicked().getOpenInventory().getTopInventory())) {
       return;
     }
     e.setCancelled(true);
