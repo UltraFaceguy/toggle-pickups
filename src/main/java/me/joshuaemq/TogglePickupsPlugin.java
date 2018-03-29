@@ -96,7 +96,7 @@ public class TogglePickupsPlugin extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
         reloadConfig();
-        loadPlayerData();
+        loadOnlinePlayers();
 
         Bukkit.getServer().getLogger().info("Toggleable Drops By Joshuaemq Enabled!");
     }
@@ -113,19 +113,22 @@ public class TogglePickupsPlugin extends JavaPlugin {
         Bukkit.getServer().getLogger().info("Toggleable Drops By Joshuaemq Disabled!");
     }
 
-    public void loadPlayerData() {
+    private void loadOnlinePlayers() {
+        System.out.println("Loading data files for all online players...");
         if (getDataFolder() == null) {
             System.out.println("ERROR! NO DATA FOLDER FOUND! UH OH!");
             return;
         }
-        File dataFile = new File(getDataFolder() + "/data");
-        if (!dataFile.exists()) {
-            dataFile.mkdir();
+        int loadedPlayers = 0;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            File dataFile = new File(getDataFolder() + "/data", player.getUniqueId() + ".yml");
+            if (!dataFile.exists()) {
+                continue;
+            }
+            loadPlayerFile(dataFile);
+            loadedPlayers++;
         }
-        FileConfiguration playerFile2;
-        for (File file : dataFile.listFiles()) {
-            loadPlayerFile(file);
-        }
+        System.out.println("Loaded data for all online players! (" + loadedPlayers + " entries)");
     }
 
     public void loadPlayerFile(File file) {
@@ -133,9 +136,9 @@ public class TogglePickupsPlugin extends JavaPlugin {
 
         String fileName = file.getName();
         int index = fileName.indexOf(".");
-        String str = fileName.substring(0, index);
+        String uuidString = fileName.substring(0, index);
 
-        List<String> playerFilterEntries = playerFile2.getStringList(str + ".loot-filter-entries");
+        List<String> playerFilterEntries = playerFile2.getStringList(uuidString + ".loot-filter-entries");
 
         List<FilterSetting> playerSettings = new ArrayList<>();
         for (String s : playerFilterEntries) {
@@ -147,7 +150,7 @@ public class TogglePickupsPlugin extends JavaPlugin {
         //playerFilterData.setFilterEnabled(dropsEnabled);
         playerFilterData.setLootFilterEntries(playerSettings);
 
-        UUID uuid = UUID.fromString(str);
+        UUID uuid = UUID.fromString(uuidString);
         playerFilterManager.getPlayerFilterMap().put(uuid, playerFilterData);
     }
 
