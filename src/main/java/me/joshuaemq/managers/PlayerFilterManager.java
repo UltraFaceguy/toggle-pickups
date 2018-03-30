@@ -7,7 +7,7 @@ import me.joshuaemq.data.PlayerFilterData;
 
 public class PlayerFilterManager {
 
-  private static Map<UUID, PlayerFilterData> playerFilterMap;
+  private Map<UUID, PlayerFilterData> playerFilterMap;
 
   public PlayerFilterManager() {
     this.playerFilterMap = new HashMap<>();
