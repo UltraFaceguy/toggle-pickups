@@ -83,8 +83,8 @@ public class TogglePickupsPlugin extends JavaPlugin {
         saveTask = new SaveTask(this);
 
         saveTask.runTaskTimer(this,
-                4 * 60 * 20L,
-                5 * 60 * 20L
+                250 * 20L, // 4m10s delay
+                300 * 20L // 5m repeat period
         );
 
         Bukkit.getPluginManager().registerEvents(new ItemPickupListener(this), this);
@@ -102,7 +102,7 @@ public class TogglePickupsPlugin extends JavaPlugin {
     }
 
     public void onDisable() {
-        saveTask.saveAll();
+        saveTask.run();
         saveTask.cancel();
         HandlerList.unregisterAll(this);
         playerFilterManager = null;
@@ -152,6 +152,31 @@ public class TogglePickupsPlugin extends JavaPlugin {
 
         UUID uuid = UUID.fromString(uuidString);
         playerFilterManager.getPlayerFilterMap().put(uuid, playerFilterData);
+    }
+
+    public void savePlayerData(UUID uuid) {
+        if (getDataFolder() == null) {
+            System.out.println("ERROR! NO DATA FOLDER FOUND! UH OH!");
+            return;
+        }
+        PlayerFilterData playerData = getPlayerFilterManager().getPlayerFilterMap().get(uuid);
+        File playerFile = new File(getDataFolder() + "/data", uuid.toString() + ".yml");
+        if (!playerFile.exists()) {
+            createPlayerFile(uuid);
+        }
+        FileConfiguration config = YamlConfiguration.loadConfiguration(playerFile);
+
+        List<String> entries = new ArrayList<>();
+        for (FilterSetting setting : playerData.getLootFilterEntries()) {
+            entries.add(setting.toString());
+        }
+        config.set(uuid + ".loot-filter-entries", entries);
+
+        try {
+            config.save(playerFile);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
     }
 
     public PlayerFilterManager getPlayerFilterManager () {
