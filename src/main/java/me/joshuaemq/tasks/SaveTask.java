@@ -25,7 +25,7 @@ public class SaveTask extends BukkitRunnable {
         }
 
         for (UUID uuid : playersToRemove) {
-            if (Bukkit.getOfflinePlayer(uuid).equals(true)) {
+            if (!Bukkit.getOfflinePlayer(uuid).isOnline()) {
                 plugin.getPlayerFilterManager().getPlayerFilterMap().remove(uuid);
             }
         }
