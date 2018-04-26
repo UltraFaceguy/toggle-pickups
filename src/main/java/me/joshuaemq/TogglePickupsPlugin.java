@@ -83,8 +83,8 @@ public class TogglePickupsPlugin extends JavaPlugin {
         saveTask = new SaveTask(this);
 
         saveTask.runTaskTimer(this,
-                250 * 20L, // 4m10s delay
-                300 * 20L // 5m repeat period
+                250 * 20L, // 4m10s delay: 250 * 20L,
+                300 * 20L // 5m repeat period: 300 * 20L
         );
 
         Bukkit.getPluginManager().registerEvents(new ItemPickupListener(this), this);

@@ -17,7 +17,7 @@ public class SaveTask extends BukkitRunnable {
 
     public void run() {
         System.out.println("Saving ToggleDrops data...");
-        List<UUID> playersToRemove = new ArrayList<>();
+        List<UUID> playersToRemove = new ArrayList<UUID>();
 
         for (UUID key : plugin.getPlayerFilterManager().getPlayerFilterMap().keySet()) {
             plugin.savePlayerData(key);
@@ -25,7 +25,7 @@ public class SaveTask extends BukkitRunnable {
         }
 
         for (UUID uuid : playersToRemove) {
-            if (!((Player) Bukkit.getEntity(uuid)).isOnline()) {
+            if (Bukkit.getOfflinePlayer(uuid).equals(true)) {
                 plugin.getPlayerFilterManager().getPlayerFilterMap().remove(uuid);
             }
         }
