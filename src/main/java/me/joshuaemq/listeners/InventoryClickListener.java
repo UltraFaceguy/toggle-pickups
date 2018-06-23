@@ -36,6 +36,9 @@ public class InventoryClickListener implements Listener {
       return;
     }
     e.setCancelled(true);
+    if (e.getClickedInventory() != e.getWhoClicked().getOpenInventory().getTopInventory()) {
+      return;
+    }
     if (e.getCurrentItem().getType() != Material.EMERALD_BLOCK
         && e.getCurrentItem().getType() != Material.REDSTONE_BLOCK) {
       return;
