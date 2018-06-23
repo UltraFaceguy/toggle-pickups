@@ -2,17 +2,17 @@ package me.joshuaemq.data;
 
 public enum FilterSetting {
 
-  JUNK("Junk", null, null, null, null),
-  COMMON("Common", null, null, "Common", null),
-  UNCOMMON("Uncommon", null, null, "Uncommon", null),
-  RARE("Rare", null, null, "Rare", null),
-  EPIC("Epic", null, null, "Epic", null),
-  TOME("Enchantment Tome", "Enchantment Tome", null, null, null),
-  SCROLL("Upgrade Scroll", "Upgrade Scroll", null, null, null),
-  GEM_I("Socket Gem (I)", "Socket Gem", " I", null, null),
-  GEM_II("Socket Gem (II)", "Socket Gem", " II", null, null),
-  GEM_III("Socket Gem (III)", "Socket Gem", " III", null, null),
-  GEM_IV("Socket Gem (IV)", "Socket Gem", " IV", null, null);
+  JUNK("Junk Items", null, null, null, null),
+  COMMON("Common Equipment", null, null, "Common", null),
+  UNCOMMON("Uncommon Equipment", null, null, "Uncommon", null),
+  RARE("Rare Equipment", null, null, "Rare", null),
+  EPIC("Epic Equipment", null, null, "Epic", null),
+  TOME("Enchantment Tomes", "Enchantment Tome", null, null, null),
+  SCROLL("Upgrade Scrolls", "Upgrade Scroll", null, null, null),
+  GEM_I("Socket Gems (I)", "Socket Gem", " I", null, null),
+  GEM_II("Socket Gems (II)", "Socket Gem", " II", null, null),
+  GEM_III("Socket Gems (III)", "Socket Gem", " III", null, null),
+  GEM_IV("Socket Gems (IV)", "Socket Gem", " IV", null, null);
 
   private final String name;
   private final String nameFilter;

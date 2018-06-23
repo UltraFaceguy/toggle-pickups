@@ -24,13 +24,22 @@ public class InventoryClickListener implements Listener {
 
   @EventHandler(priority = EventPriority.LOWEST)
   public void onInvyClick(InventoryClickEvent e) {
-    if (e.getWhoClicked().getOpenInventory() == null || e.getWhoClicked().getOpenInventory().getTopInventory() == null) {
+    if (e.isCancelled()) {
       return;
     }
-    if (!plugin.getFilterGuiManager().getOpenMenus().contains(e.getWhoClicked().getOpenInventory().getTopInventory())) {
+    if (e.getWhoClicked().getOpenInventory() == null
+        || e.getWhoClicked().getOpenInventory().getTopInventory() == null) {
+      return;
+    }
+    if (!plugin.getFilterGuiManager().getOpenMenus()
+        .contains(e.getWhoClicked().getOpenInventory().getTopInventory())) {
       return;
     }
     e.setCancelled(true);
+    if (e.getCurrentItem().getType() != Material.EMERALD_BLOCK
+        && e.getCurrentItem().getType() != Material.REDSTONE_BLOCK) {
+      return;
+    }
     toggleSetting(e.getCurrentItem(), (Player) e.getWhoClicked());
   }
 
@@ -46,8 +55,9 @@ public class InventoryClickListener implements Listener {
       return;
     }
     for (FilterSetting setting : FilterSetting.values()) {
-      if (stackName.startsWith(setting.getName())) {
-        PlayerFilterData data = plugin.getPlayerFilterManager().getPlayerFilterMap().get(owner.getUniqueId());
+      if (stackName.equals(setting.getName())) {
+        PlayerFilterData data = plugin.getPlayerFilterManager().getPlayerFilterMap()
+            .get(owner.getUniqueId());
         if (data.getLootFilterEntries().contains(setting)) {
           data.getLootFilterEntries().remove(setting);
           owner.playSound(owner.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.5f);
@@ -55,7 +65,8 @@ public class InventoryClickListener implements Listener {
           data.getLootFilterEntries().add(setting);
           owner.playSound(owner.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.75f);
         }
-        FilterGuiMenu.setToggleButton(stack, setting.getName(), data.getLootFilterEntries().contains(setting));
+        FilterGuiMenu.setToggleButton(stack, setting.getName(),
+            data.getLootFilterEntries().contains(setting));
         plugin.getPlayerFilterManager().getPlayerFilterMap().put(owner.getUniqueId(), data);
         return;
       }
