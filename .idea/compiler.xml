@@ -9,8 +9,5 @@
         <module name="TogglePickups" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="TogglePickups" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>

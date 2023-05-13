@@ -40,7 +40,7 @@ public class FilterCommand implements CommandExecutor {
       //  }
       //} else
       if (args.length == 0 || args[0].equalsIgnoreCase("menu")) {
-        plugin.getFilterGuiManager().open(p);
+        plugin.getMainMenu().open(p);
       } else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
         p.sendMessage(ChatColor.GREEN + "-=+=-" + ChatColor.GOLD + " Toggle Drops " + ChatColor.GREEN + "-=+=-");
         p.sendMessage(ChatColor.GRAY + "Toggle Drops allows you to configure a whitelist of items you are able to pickup!");

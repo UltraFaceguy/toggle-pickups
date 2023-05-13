@@ -3,10 +3,11 @@ version: 1.0
 main: me.joshuaemq.TogglePickupsPlugin
 author: joshuaemq
 description: Allows you to toggle pickups!
+api-version: 1.14
 
 commands:
-     toggledrops:
-         usage: /<command>
-         aliases: [td]
-         permission: toggledrops.use
-         description: Toggle Drops
+  toggledrops:
+    usage: /<command>
+    aliases: [td]
+    permission: toggledrops.use
+    description: Toggle Drops

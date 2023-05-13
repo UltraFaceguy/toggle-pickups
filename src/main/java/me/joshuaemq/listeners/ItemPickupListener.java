@@ -18,7 +18,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class ItemPickupListener implements Listener {
 
-  private TogglePickupsPlugin plugin;
+  private final TogglePickupsPlugin plugin;
 
   public ItemPickupListener(TogglePickupsPlugin plugin) {
     this.plugin = plugin;
@@ -68,22 +68,34 @@ public class ItemPickupListener implements Listener {
       return;
     }
     String itemLoreNoColor = ChatColor.stripColor(lore.toString());
-    for (FilterSetting setting : data.getLootFilterEntries()) {
-      if (setting.getLoreFilter() != null && itemLoreNoColor.contains(setting.getLoreFilter())) {
+
+    for (FilterSetting setting : FilterSetting.VALUES) {
+      if (!data.getLootFilterEntries().contains(setting)) {
+        if (itemMatches(itemNameNoColor, itemLoreNoColor, setting)) {
+          return;
+        }
+      }
+      if (itemMatches(itemNameNoColor, itemLoreNoColor, setting)) {
         cancelItemPickupAndSetItemMeta(event);
         return;
       }
-      if (setting.getNameFilter() != null && itemNameNoColor.contains(setting.getNameFilter())) {
-        if (setting.getSecondaryNameFilter() == null) {
-          cancelItemPickupAndSetItemMeta(event);
-          return;
-        }
-        if (itemNameNoColor.endsWith(setting.getSecondaryNameFilter())) {
-          cancelItemPickupAndSetItemMeta(event);
-          return;
-        }
-      }
     }
+  }
+
+  private boolean itemMatches(String name, String lore, FilterSetting setting) {
+    if (setting.getNameFilter() != null && name.contains(setting.getNameFilter())) {
+      if (setting.getSecondaryNameFilter() == null) {
+        return true;
+      }
+      return name.endsWith(setting.getSecondaryNameFilter());
+    }
+    if (setting.getLoreFilter() != null && lore.contains(setting.getLoreFilter())) {
+      if (setting.getSecondaryLoreFilter() == null) {
+        return true;
+      }
+      return lore.contains(setting.getSecondaryLoreFilter());
+    }
+    return false;
   }
 
   private void cancelItemPickupAndSetItemMeta(EntityPickupItemEvent event) {
